@@ -27,13 +27,13 @@ router.post("/", (req, res) => {
 
 //create comment by post id
 router.post("/:id/comments", (req, res) => {
-  const { text,  post_id } = req.body;
+  const { text, post_id } = req.body;
   const comment = req.body;
   const id = req.params.id;
 
   if (!text) {
     res.status(400).json({
-      errorMessage: "Please provide text for the comment.",
+      errorMessage: "Please provide text for the comment."
     });
   }
 
@@ -44,9 +44,9 @@ router.post("/:id/comments", (req, res) => {
       id: id
     });
   }
-  
+
   Hubs.insertComment(comment)
-  .then(eachComment => {  
+    .then(eachComment => {
       res.status(201).json(eachComment);
     })
     .catch(error => {
@@ -89,7 +89,7 @@ router.get("/:id", (req, res) => {
       // log error to database
       console.log(error);
       res.status(500).json({
-        message: "Error retrieving the hub"
+        error: "The post information could not be retrieved."
       });
     });
 });
@@ -119,19 +119,19 @@ router.get("/:id/comments", (req, res) => {
 router.delete("/:id", (req, res) => {
   Hubs.remove(req.params.id)
     .then(count => {
-      if (count > 0) {
-        res.status(200).json(post); //returns the number of records deleted?
-      } else {
+      if (!count) {
         res
           .status(404)
           .json({ message: "The post with the specified ID does not exist." });
       }
+      res.status(200).json(count); 
     })
     .catch(error => {
       // log error to database
       console.log(error);
       res.status(500).json({
-        message: "Error removing the hub"
+        message: "Error removing the hub",
+        req: req.body
       });
     });
 });
