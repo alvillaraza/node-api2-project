@@ -31,7 +31,7 @@ router.post("/", (req, res) => {
 router.post("/:id/comments", (req, res) => {
   const { text,  post_id } = req.body;
   const comment = req.body;
-  const id = req.params;
+  const id = req.params.id;
 
   if (!text) {
     res.status(400).json({
@@ -39,9 +39,11 @@ router.post("/:id/comments", (req, res) => {
     });
   }
 
-  if (post_id !== id) {
+  if (post_id !== JSON.parse(id)) {
     res.status(404).json({
       message: "The post with the specified ID does not exist.",
+      postID: post_id,
+      id: id
     });
   }
 
