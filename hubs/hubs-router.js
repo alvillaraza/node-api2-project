@@ -12,9 +12,7 @@ router.post("/", (req, res) => {
     .then(post => {
       if (!title || !contents) {
         res.status(400).json({
-          errorMessage: "Please provide title and contents for the post.",
-          title: title,
-          contents: contents
+          errorMessage: "Please provide title and contents for the post."
         });
       }
       res.status(201).json(post);
@@ -46,9 +44,9 @@ router.post("/:id/comments", (req, res) => {
       id: id
     });
   }
-
+  
   Hubs.insertComment(comment)
-    .then(eachComment => {
+  .then(eachComment => {  
       res.status(201).json(eachComment);
     })
     .catch(error => {
@@ -140,7 +138,15 @@ router.delete("/:id", (req, res) => {
 
 //update post
 router.put("/:id", (req, res) => {
+  const { title, contents } = req.body;
   const changes = req.body;
+
+  if (!title || !contents) {
+    res.status(400).json({
+      errorMessage: "Please provide title and contents for the post."
+    });
+  }
+
   Hubs.update(req.params.id, changes)
     .then(updatePost => {
       if (updatePost) {
