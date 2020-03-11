@@ -8,8 +8,6 @@ router.post("/", (req, res) => {
   const { title, contents } = req.body;
   const userPost = req.body;
 
-  // res.status(201).json(userPost);
-
   Hubs.insert(userPost)
     .then(post => {
       if (!title || !contents) {
@@ -22,7 +20,6 @@ router.post("/", (req, res) => {
       res.status(201).json(post);
     })
     .catch(error => {
-      // log error to database
       console.log(error);
       res.status(500).json({
         message: "Error adding the hub"
@@ -32,28 +29,33 @@ router.post("/", (req, res) => {
 
 //create comment by post id
 router.post("/:id/comments", (req, res) => {
-  const { title, content } = req.body;
-  const userPost = req.body;
+  const { text,  post_id } = req.body;
+  const comment = req.body;
+  const id = req.params;
 
-  if (!title || !content) {
+  if (!text) {
     res.status(400).json({
-      errorMessage: "Please provide title and contents for the post."
+      errorMessage: "Please provide text for the comment.",
     });
   }
 
-  res.status(201).json(userPost);
+  if (post_id !== id) {
+    res.status(404).json({
+      message: "The post with the specified ID does not exist.",
+    });
+  }
 
-  // Hubs.insert(userPost)
-  //   .then(post => {
-  //     res.status(201).json(post);
-  //   })
-  //   .catch(error => {
-  //     // log error to database
-  //     console.log(error);
-  //     res.status(500).json({
-  //       message: "Error adding the hub"
-  //     });
-  //   });
+  Hubs.insertComment(comment)
+    .then(eachComment => {
+      res.status(201).json(eachComment);
+    })
+    .catch(error => {
+      // log error to database
+      console.log(error);
+      res.status(500).json({
+        message: "Error adding the hub"
+      });
+    });
 });
 
 //get posts
@@ -93,8 +95,8 @@ router.get("/:id", (req, res) => {
 });
 
 //get comment by post id
-router.get("/:id/comment", (req, res) => {
-  Hubs.findById(req.params.id)
+router.get("/:id/comments", (req, res) => {
+  Hubs.findPostComments(req.params.id)
     .then(post => {
       if (post) {
         res.status(200).json(post);
